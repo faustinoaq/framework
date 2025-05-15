@@ -1,0 +1,93 @@
+<html>
+<head>
+    <title>Cylinder Surface Area</title>
+    <style>
+        body {{ font-family: sans-serif; padding: 2rem; }}
+        .result {{ margin-top: 1rem; }}
+    </style>
+</head>
+<body>
+    <h1>Cylinder Surface Area Calculator</h1>
+    <div class="result">
+        <p><strong>Radius:</strong> {radius}</p>
+        <p><strong>Height:</strong> {height}</p>
+        <p><strong>Surface area:</strong> {area:.2f}</p>
+    </div>
+    <canvas id="cylinderCanvas" width="500" height="400" style="border:1px solid #000;"></canvas>
+    <script>
+        // injected by Python.format:
+        const radius = {radius};
+        const height = {height};
+        const area = {area:.2f};
+        const canvas = document.getElementById('cylinderCanvas');
+        const ctx = canvas.getContext('2d');
+        // compute dimensions
+        const cx = canvas.width / 2;
+        const topY = 60;
+        const maxWidth = canvas.width - 40;
+        const maxHeightPx = canvas.height - topY - 40;
+        const scale = Math.min(maxWidth / 2 / radius, maxHeightPx / height);
+        const rpx = radius * scale;
+        const hpx = height * scale;
+        const ry = rpx / 4;
+        // draw top ellipse
+        ctx.beginPath();
+        ctx.ellipse(cx, topY + ry, rpx, ry, 0, 0, Math.PI * 2);
+        // top gradient
+        const topGrad = ctx.createRadialGradient(
+            cx - rpx / 3,
+            topY - ry / 3,
+            rpx * 0.1,
+            cx,
+            topY + ry,
+            rpx
+        );
+        topGrad.addColorStop(0, 'rgba(255,255,255,0.8)');
+        topGrad.addColorStop(0.6, '#8ab6d6');
+        topGrad.addColorStop(1, '#1e3f66');
+        ctx.fillStyle = topGrad;
+        ctx.fill();
+        ctx.strokeStyle = '#004e7c';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        // draw side
+        const sideGrad = ctx.createLinearGradient(
+            cx - rpx,
+            topY + ry,
+            cx + rpx,
+            topY + ry
+        );
+        sideGrad.addColorStop(0, '#1e3f66');
+        sideGrad.addColorStop(1, '#8ab6d6');
+        ctx.fillStyle = sideGrad;
+        ctx.fillRect(cx - rpx, topY + ry, 2 * rpx, hpx);
+        ctx.strokeStyle = '#004e7c';
+        ctx.strokeRect(cx - rpx, topY + ry, 2 * rpx, hpx);
+        // draw bottom ellipse
+        ctx.beginPath();
+        ctx.ellipse(cx, topY + ry + hpx, rpx, ry, 0, 0, Math.PI * 2);
+        const bottomGrad = ctx.createRadialGradient(
+            cx + rpx / 3,
+            topY + ry + hpx + ry / 3,
+            rpx * 0.1,
+            cx,
+            topY + ry + hpx,
+            rpx
+        );
+        bottomGrad.addColorStop(0, '#1e3f66');
+        bottomGrad.addColorStop(1, '#8ab6d6');
+        ctx.fillStyle = bottomGrad;
+        ctx.fill();
+        // dashed back half
+        ctx.setLineDash([5, 3]);
+        ctx.beginPath();
+        ctx.ellipse(cx, topY + ry + hpx, rpx, ry, 0, Math.PI, 2 * Math.PI);
+        ctx.stroke();
+        // front half
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.ellipse(cx, topY + ry + hpx, rpx, ry, 0, 0, Math.PI);
+        ctx.stroke();
+    </script>
+</body>
+</html>

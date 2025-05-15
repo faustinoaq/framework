@@ -1,0 +1,53 @@
+<html>
+<head>
+    <title>Sphere Surface Area</title>
+    <style>
+        body {{ font-family: sans-serif; padding: 2rem; }}
+        .result {{ margin-top: 1rem; }}
+    </style>
+</head>
+<body>
+    <h1>Sphere Surface Area Calculator</h1>
+    <div class="result">
+        <p><strong>Radius:</strong> {radius}</p>
+        <p><strong>Surface area:</strong> {area:.2f}</p>
+    </div>
+    <!-- Canvas to draw the sphere as a circle -->
+    <canvas id="sphereCanvas" width="400" height="400" style="border:1px solid #000;"></canvas>
+    <script>
+        // Parse parameters (injected by Python formatting)
+        const radius = {radius};
+        const area = {area:.2f};
+        const canvas = document.getElementById('sphereCanvas');
+        const ctx = canvas.getContext('2d');
+        // Determine scale to fit the circle within the canvas
+        const maxDim = Math.min(canvas.width, canvas.height) / 2 - 10;
+        const scale = radius > maxDim ? maxDim / radius : 1;
+        const rpx = radius * scale;
+        // Draw
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, rpx, 0, Math.PI * 2);
+        // simulate 3D sphere with radial gradient
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const grad = ctx.createRadialGradient(
+            cx - rpx / 3,
+            cy - rpx / 3,
+            rpx * 0.1,
+            cx,
+            cy,
+            rpx
+        );
+        grad.addColorStop(0, 'rgba(255,255,255,0.8)');
+        grad.addColorStop(0.5, '#8ab6d6');
+        grad.addColorStop(1, '#1e3f66');
+        ctx.fillStyle = grad;
+        ctx.fill();
+        // outline
+        ctx.strokeStyle = '#004e7c';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+    </script>
+</body>
+</html>
